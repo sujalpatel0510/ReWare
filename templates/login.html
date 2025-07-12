@@ -14,7 +14,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #B0E0E6;
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -41,7 +41,7 @@
             left: 0;
             right: 0;
             height: 4px;
-            background: linear-gradient(90deg, #667eea, #764ba2);
+            background: linear-gradient(90deg, #B0E0E6, #764ba2);
         }
 
         .logo-section {
@@ -51,13 +51,13 @@
         .logo-circle {
             width: 80px;
             height: 80px;
-            border: 3px solid #667eea;
+            border: 3px solid #B0E0E6;
             border-radius: 50%;
             margin: 0 auto 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #B0E0E6;
             color: white;
             font-size: 24px;
             font-weight: bold;
@@ -72,7 +72,7 @@
             left: -2px;
             right: -2px;
             bottom: -2px;
-            background: linear-gradient(45deg, #667eea, #764ba2, #667eea);
+            background: #B0E0E6;
             border-radius: 50%;
             z-index: -1;
             animation: rotate 3s linear infinite;
@@ -106,8 +106,8 @@
         }
 
         .input-group:focus-within {
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: #B0E0E6;
+            box-shadow: 0 0 0 3px rgba(176, 224, 230, 0.1);
         }
 
         .input-group i {
@@ -115,8 +115,8 @@
             left: 15px;
             top: 50%;
             transform: translateY(-50%);
-            color: #999;
-            font-size: 16px;
+            color: #333;
+            font-size: 8px;
         }
 
         .input-group input {
@@ -173,7 +173,7 @@
         }
 
         .forgot-password {
-            color: #667eea;
+            color: #B0E0E6;
             text-decoration: none;
             font-weight: 500;
             transition: color 0.3s ease;
@@ -186,7 +186,7 @@
         .login-btn {
             width: 100%;
             padding: 16px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #B0E0E6 0%, #764ba2 100%);
             color: white;
             border: none;
             border-radius: 12px;
@@ -201,7 +201,7 @@
 
         .login-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 10px 20px rgba(176, 224, 230, 0.3);
         }
 
         .login-btn:active {
@@ -210,23 +210,23 @@
 
         .divider {
             position: relative;
-            margin: 30px 0;
+            margin: 15px 0 25px 0;
             text-align: center;
         }
 
         .divider::before {
             content: '';
             position: absolute;
-            top: 50%;
-            left: 0;
-            right: 0;
+            top: 20%;
+            left: 10%;
+            right: 10%;
             height: 1px;
             background: #e1e5e9;
         }
 
         .divider span {
             background: white;
-            padding: 0 20px;
+            padding: 0 15px;
             color: #999;
             font-size: 14px;
         }
@@ -254,8 +254,8 @@
         }
 
         .social-btn:hover {
-            border-color: #667eea;
-            color: #667eea;
+            border-color: #B0E0E6;
+            color: #B0E0E6;
             transform: translateY(-2px);
         }
 
@@ -275,7 +275,7 @@
         }
 
         .auth-footer a {
-            color: #667eea;
+            color: #B0E0E6;
             text-decoration: none;
             font-weight: 600;
             transition: color 0.3s ease;
@@ -331,24 +331,21 @@
             <div class="logo-circle">
                 R
             </div>
-            <div class="page-title">Screen 1 - Login Page</div>
+            <div class="page-title">Login Page</div>
         </div>
         
         <form class="auth-form" onsubmit="handleLogin(event)">
             <div class="form-group">
                 <div class="input-group">
-                    <i class="fas fa-user"></i>
+                    <i class="fas fa-circle"></i>
                     <input type="email" id="email" name="email" placeholder="Username" required>
                 </div>
             </div>
             
             <div class="form-group">
                 <div class="input-group">
-                    <i class="fas fa-lock"></i>
+                    <i class="fas fa-circle"></i>
                     <input type="password" id="password" name="password" placeholder="Password" required>
-                    <button type="button" class="password-toggle" onclick="togglePassword()">
-                        <i class="fas fa-eye"></i>
-                    </button>
                 </div>
             </div>
             
