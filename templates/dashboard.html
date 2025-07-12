@@ -1,0 +1,260 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - ReWear{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- Dashboard Header -->
+    <div class="dashboard-header">
+        <div class="welcome-section">
+            <h1>Welcome back, {{ user.name }}!</h1>
+            <p>Manage your items and track your swaps</p>
+        </div>
+        <div class="quick-actions">
+            <a href="{{ url_for('add_item') }}" class="btn btn-primary">
+                <i class="fas fa-plus"></i>
+                List New Item
+            </a>
+            <a href="{{ url_for('browse') }}" class="btn btn-outline">
+                <i class="fas fa-search"></i>
+                Browse Items
+            </a>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-coins"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{{ user.points }}</h3>
+                <p>Points Balance</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-tshirt"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{{ user_items|length }}</h3>
+                <p>Items Listed</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-exchange-alt"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{{ swap_requests|length }}</h3>
+                <p>Swap Requests</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{{ swap_requests|selectattr('status', 'equalto', 'completed')|list|length }}</h3>
+                <p>Completed Swaps</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Content -->
+    <div class="dashboard-content">
+        <!-- My Items Section -->
+        <div class="dashboard-section">
+            <div class="section-header">
+                <h2>My Items</h2>
+                <a href="{{ url_for('add_item') }}" class="btn btn-outline btn-sm">Add New</a>
+            </div>
+            
+            {% if user_items %}
+            <div class="items-grid">
+                {% for item in user_items %}
+                <div class="item-card">
+                    <div class="item-image">
+                        {% if item.images %}
+                            {% set image_list = item.images.split(',') %}
+                            <img src="{{ url_for('static', filename='uploads/' + image_list[0]) }}" alt="{{ item.title }}">
+                        {% else %}
+                            <div class="no-image">
+                                <i class="fas fa-image"></i>
+                            </div>
+                        {% endif %}
+                        <div class="item-status">
+                            {% if item.is_approved %}
+                                {% if item.is_available %}
+                                    <span class="status-badge status-available">Available</span>
+                                {% else %}
+                                    <span class="status-badge status-swapped">Swapped</span>
+                                {% endif %}
+                            {% else %}
+                                <span class="status-badge status-pending">Pending Review</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="item-info">
+                        <h3>{{ item.title }}</h3>
+                        <p class="item-category">{{ item.category }} • {{ item.size }}</p>
+                        <div class="item-meta">
+                            <span class="item-condition">{{ item.condition }}</span>
+                            <span class="item-points">{{ item.points_value }} points</span>
+                        </div>
+                        <div class="item-actions">
+                            <a href="{{ url_for('item_detail', item_id=item.id) }}" class="btn btn-outline btn-sm">View</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <i class="fas fa-tshirt"></i>
+                <h3>No items listed yet</h3>
+                <p>Start by listing your first item for swap</p>
+                <a href="{{ url_for('add_item') }}" class="btn btn-primary">List an Item</a>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Swap Requests Section -->
+        <div class="dashboard-section">
+            <div class="section-header">
+                <h2>Swap Requests</h2>
+            </div>
+            
+            <div class="tabs">
+                <button class="tab-btn active" onclick="showTab('sent')">Sent Requests</button>
+                <button class="tab-btn" onclick="showTab('received')">Received Requests</button>
+            </div>
+            
+            <!-- Sent Requests Tab -->
+            <div class="tab-content active" id="sent-tab">
+                {% if swap_requests %}
+                <div class="requests-list">
+                    {% for request in swap_requests %}
+                    <div class="request-card">
+                        <div class="request-item">
+                            <div class="item-image">
+                                {% if request.item.images %}
+                                    {% set image_list = request.item.images.split(',') %}
+                                    <img src="{{ url_for('static', filename='uploads/' + image_list[0]) }}" alt="{{ request.item.title }}">
+                                {% else %}
+                                    <div class="no-image">
+                                        <i class="fas fa-image"></i>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="item-details">
+                                <h4>{{ request.item.title }}</h4>
+                                <p>{{ request.item.category }} • {{ request.item.size }}</p>
+                                <p class="item-owner">by {{ request.item.uploader.name }}</p>
+                            </div>
+                        </div>
+                        <div class="request-status">
+                            <span class="status-badge status-{{ request.status }}">{{ request.status|title }}</span>
+                            <p class="request-date">{{ request.created_at.strftime('%b %d, %Y') }}</p>
+                        </div>
+                        <div class="request-actions">
+                            <a href="{{ url_for('item_detail', item_id=request.item.id) }}" class="btn btn-outline btn-sm">View Item</a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-exchange-alt"></i>
+                    <h3>No swap requests sent</h3>
+                    <p>Start browsing items to make swap requests</p>
+                    <a href="{{ url_for('browse') }}" class="btn btn-primary">Browse Items</a>
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- Received Requests Tab -->
+            <div class="tab-content" id="received-tab">
+                {% if received_requests %}
+                <div class="requests-list">
+                    {% for request in received_requests %}
+                    <div class="request-card">
+                        <div class="request-item">
+                            <div class="item-image">
+                                {% if request.item.images %}
+                                    {% set image_list = request.item.images.split(',') %}
+                                    <img src="{{ url_for('static', filename='uploads/' + image_list[0]) }}" alt="{{ request.item.title }}">
+                                {% else %}
+                                    <div class="no-image">
+                                        <i class="fas fa-image"></i>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="item-details">
+                                <h4>{{ request.item.title }}</h4>
+                                <p>{{ request.item.category }} • {{ request.item.size }}</p>
+                                <p class="item-requester">Requested by {{ request.requester.name }}</p>
+                                {% if request.message %}
+                                <p class="request-message">{{ request.message }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="request-status">
+                            <span class="status-badge status-{{ request.status }}">{{ request.status|title }}</span>
+                            <p class="request-date">{{ request.created_at.strftime('%b %d, %Y') }}</p>
+                        </div>
+                        <div class="request-actions">
+                            {% if request.status == 'pending' %}
+                            <form method="POST" action="{{ url_for('handle_swap', request_id=request.id, action='accept') }}" style="display: inline;">
+                                <button type="submit" class="btn btn-success btn-sm">Accept</button>
+                            </form>
+                            <form method="POST" action="{{ url_for('handle_swap', request_id=request.id, action='reject') }}" style="display: inline;">
+                                <button type="submit" class="btn btn-danger btn-sm">Reject</button>
+                            </form>
+                            {% endif %}
+                            <a href="{{ url_for('item_detail', item_id=request.item.id) }}" class="btn btn-outline btn-sm">View Item</a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-inbox"></i>
+                    <h3>No received requests</h3>
+                    <p>When someone requests your items, they'll appear here</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function showTab(tabName) {
+    // Hide all tab contents
+    document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+    });
+    
+    // Remove active class from all tab buttons
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    // Show selected tab content
+    document.getElementById(tabName + '-tab').classList.add('active');
+    
+    // Add active class to clicked button
+    event.target.classList.add('active');
+}
+
+// Auto-refresh dashboard every 30 seconds
+setInterval(() => {
+    // You can add AJAX call here to refresh data
+    console.log('Dashboard auto-refresh');
+}, 30000);
+</script>
+{% endblock %} 
