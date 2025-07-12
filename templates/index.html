@@ -1,0 +1,196 @@
+{% extends "base.html" %}
+
+{% block title %}ReWear - Community Clothing Exchange{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+    <div class="hero-container">
+        <div class="hero-content">
+            <h1 class="hero-title">Sustainable Fashion Starts Here</h1>
+            <p class="hero-subtitle">Join our community clothing exchange platform. Swap, share, and reduce textile waste while building a sustainable fashion community.</p>
+            <div class="hero-actions">
+                <a href="{{ url_for('signup') }}" class="btn btn-primary btn-large">Start Swapping</a>
+                <a href="{{ url_for('browse') }}" class="btn btn-outline btn-large">Browse Items</a>
+            </div>
+        </div>
+        <div class="hero-image">
+            <div class="hero-visual">
+                <i class="fas fa-tshirt"></i>
+                <i class="fas fa-exchange-alt"></i>
+                <i class="fas fa-leaf"></i>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features">
+    <div class="container">
+        <h2 class="section-title">Why Choose ReWear?</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-recycle"></i>
+                </div>
+                <h3>Sustainable Fashion</h3>
+                <p>Reduce textile waste by giving clothes a second life through community exchange.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <h3>Community Driven</h3>
+                <p>Connect with like-minded individuals who share your passion for sustainable living.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-coins"></i>
+                </div>
+                <h3>Points System</h3>
+                <p>Earn points for your contributions and redeem them for items you love.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h3>Quality Assured</h3>
+                <p>All items are reviewed by our community to ensure quality and authenticity.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Items Section -->
+<section class="featured-items">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Featured Items</h2>
+            <a href="{{ url_for('browse') }}" class="btn btn-outline">View All</a>
+        </div>
+        
+        {% if featured_items %}
+        <div class="items-carousel">
+            <div class="carousel-container">
+                {% for item in featured_items %}
+                <div class="item-card">
+                    <div class="item-image">
+                        {% if item.images %}
+                            {% set image_list = item.images.split(',') %}
+                            <img src="{{ url_for('static', filename='uploads/' + image_list[0]) }}" alt="{{ item.title }}">
+                        {% else %}
+                            <div class="no-image">
+                                <i class="fas fa-image"></i>
+                            </div>
+                        {% endif %}
+                        <div class="item-overlay">
+                            <a href="{{ url_for('item_detail', item_id=item.id) }}" class="btn btn-primary">View Details</a>
+                        </div>
+                    </div>
+                    <div class="item-info">
+                        <h3>{{ item.title }}</h3>
+                        <p class="item-category">{{ item.category }} • {{ item.size }}</p>
+                        <div class="item-meta">
+                            <span class="item-condition">{{ item.condition }}</span>
+                            <span class="item-points">{{ item.points_value }} points</span>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <button class="carousel-btn carousel-prev" onclick="scrollCarousel(-1)">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <button class="carousel-btn carousel-next" onclick="scrollCarousel(1)">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+        {% else %}
+        <div class="no-items">
+            <i class="fas fa-tshirt"></i>
+            <h3>No items available yet</h3>
+            <p>Be the first to list an item and start the community!</p>
+            <a href="{{ url_for('add_item') }}" class="btn btn-primary">List an Item</a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="stats">
+    <div class="container">
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-number">500+</div>
+                <div class="stat-label">Items Swapped</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">200+</div>
+                <div class="stat-label">Active Users</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">50+</div>
+                <div class="stat-label">Categories</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">1000+</div>
+                <div class="stat-label">Points Earned</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta">
+    <div class="container">
+        <div class="cta-content">
+            <h2>Ready to Start Your Sustainable Fashion Journey?</h2>
+            <p>Join thousands of users who are making a difference one swap at a time.</p>
+            <div class="cta-actions">
+                <a href="{{ url_for('signup') }}" class="btn btn-primary btn-large">Join ReWear</a>
+                <a href="{{ url_for('browse') }}" class="btn btn-outline btn-large">Explore Items</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function scrollCarousel(direction) {
+    const container = document.querySelector('.carousel-container');
+    const scrollAmount = 300;
+    container.scrollBy({
+        left: direction * scrollAmount,
+        behavior: 'smooth'
+    });
+}
+
+// Auto-scroll carousel
+let autoScrollInterval;
+const startAutoScroll = () => {
+    autoScrollInterval = setInterval(() => {
+        const container = document.querySelector('.carousel-container');
+        if (container.scrollLeft >= container.scrollWidth - container.clientWidth) {
+            container.scrollTo({ left: 0, behavior: 'smooth' });
+        } else {
+            container.scrollBy({ left: 300, behavior: 'smooth' });
+        }
+    }, 5000);
+};
+
+const stopAutoScroll = () => {
+    clearInterval(autoScrollInterval);
+};
+
+// Start auto-scroll when page loads
+document.addEventListener('DOMContentLoaded', () => {
+    const carousel = document.querySelector('.items-carousel');
+    if (carousel) {
+        carousel.addEventListener('mouseenter', stopAutoScroll);
+        carousel.addEventListener('mouseleave', startAutoScroll);
+        startAutoScroll();
+    }
+});
+</script>
+{% endblock %} 
