@@ -1,0 +1,277 @@
+{% extends "base.html" %}
+
+{% block title %}Browse Items - ReWear{% endblock %}
+
+{% block content %}
+<div class="browse-container">
+    <!-- Browse Header -->
+    <div class="browse-header">
+        <h1>Browse Items</h1>
+        <p>Discover amazing clothing items from our community</p>
+    </div>
+    
+    <!-- Search and Filters -->
+    <div class="browse-filters">
+        <form method="GET" class="filter-form">
+            <div class="search-section">
+                <div class="search-input">
+                    <i class="fas fa-search"></i>
+                    <input type="text" name="search" value="{{ search }}" placeholder="Search items...">
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </div>
+            </div>
+            
+            <div class="filter-section">
+                <div class="filter-group">
+                    <label for="category-filter">Category</label>
+                    <select id="category-filter" name="category" onchange="this.form.submit()">
+                        <option value="">All Categories</option>
+                        <option value="tops" {% if category == 'tops' %}selected{% endif %}>Tops</option>
+                        <option value="bottoms" {% if category == 'bottoms' %}selected{% endif %}>Bottoms</option>
+                        <option value="dresses" {% if category == 'dresses' %}selected{% endif %}>Dresses</option>
+                        <option value="outerwear" {% if category == 'outerwear' %}selected{% endif %}>Outerwear</option>
+                        <option value="shoes" {% if category == 'shoes' %}selected{% endif %}>Shoes</option>
+                        <option value="accessories" {% if category == 'accessories' %}selected{% endif %}>Accessories</option>
+                        <option value="bags" {% if category == 'bags' %}selected{% endif %}>Bags</option>
+                        <option value="jewelry" {% if category == 'jewelry' %}selected{% endif %}>Jewelry</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="size-filter">Size</label>
+                    <select id="size-filter" name="size" onchange="this.form.submit()">
+                        <option value="">All Sizes</option>
+                        <option value="XS">XS</option>
+                        <option value="S">S</option>
+                        <option value="M">M</option>
+                        <option value="L">L</option>
+                        <option value="XL">XL</option>
+                        <option value="XXL">XXL</option>
+                        <option value="One Size">One Size</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="condition-filter">Condition</label>
+                    <select id="condition-filter" name="condition" onchange="this.form.submit()">
+                        <option value="">All Conditions</option>
+                        <option value="new">New</option>
+                        <option value="like-new">Like New</option>
+                        <option value="good">Good</option>
+                        <option value="fair">Fair</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="sort-filter">Sort By</label>
+                    <select id="sort-filter" name="sort" onchange="this.form.submit()">
+                        <option value="newest">Newest First</option>
+                        <option value="oldest">Oldest First</option>
+                        <option value="points-low">Points: Low to High</option>
+                        <option value="points-high">Points: High to Low</option>
+                    </select>
+                </div>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Results Section -->
+    <div class="browse-results">
+        <div class="results-header">
+            <h2>{{ items|length }} items found</h2>
+            <div class="view-options">
+                <button class="view-btn active" onclick="setView('grid')">
+                    <i class="fas fa-th"></i>
+                </button>
+                <button class="view-btn" onclick="setView('list')">
+                    <i class="fas fa-list"></i>
+                </button>
+            </div>
+        </div>
+        
+        {% if items %}
+        <div class="items-grid" id="items-container">
+            {% for item in items %}
+            <div class="item-card">
+                <div class="item-image">
+                    {% if item.images %}
+                        {% set image_list = item.images.split(',') %}
+                        <img src="{{ url_for('static', filename='uploads/' + image_list[0]) }}" alt="{{ item.title }}">
+                    {% else %}
+                        <div class="no-image">
+                            <i class="fas fa-image"></i>
+                        </div>
+                    {% endif %}
+                    <div class="item-overlay">
+                        <a href="{{ url_for('item_detail', item_id=item.id) }}" class="btn btn-primary">View Details</a>
+                    </div>
+                    <div class="item-badges">
+                        <span class="badge badge-category">{{ item.category|title }}</span>
+                        <span class="badge badge-points">{{ item.points_value }} pts</span>
+                    </div>
+                </div>
+                <div class="item-info">
+                    <h3>{{ item.title }}</h3>
+                    <p class="item-category">{{ item.category|title }} • {{ item.size }}</p>
+                    <div class="item-meta">
+                        <span class="item-condition">{{ item.condition|replace('-', ' ')|title }}</span>
+                        <span class="item-owner">by {{ item.uploader.name }}</span>
+                    </div>
+                    <div class="item-tags">
+                        {% if item.tags %}
+                            {% for tag in item.tags.split(',') %}
+                                <span class="tag">{{ tag.strip() }}</span>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                    <div class="item-actions">
+                        <a href="{{ url_for('item_detail', item_id=item.id) }}" class="btn btn-outline">View Details</a>
+                        {% if session.user_id and session.user_id != item.uploader_id %}
+                            <button class="btn btn-primary" onclick="requestSwap({{ item.id }})">Request Swap</button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Load More Button -->
+        {% if items|length >= 12 %}
+        <div class="load-more">
+            <button class="btn btn-outline btn-large" onclick="loadMore()">
+                <i class="fas fa-plus"></i>
+                Load More Items
+            </button>
+        </div>
+        {% endif %}
+        
+        {% else %}
+        <div class="no-results">
+            <i class="fas fa-search"></i>
+            <h3>No items found</h3>
+            <p>Try adjusting your search criteria or browse all items</p>
+            <a href="{{ url_for('browse') }}" class="btn btn-primary">Browse All Items</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Swap Request Modal -->
+<div class="modal" id="swap-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Request Swap</h3>
+            <button class="modal-close" onclick="closeModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <form id="swap-form" method="POST" action="{{ url_for('swap_request') }}">
+            <input type="hidden" id="swap-item-id" name="item_id">
+            <div class="form-group">
+                <label for="swap-message">Message (Optional)</label>
+                <textarea id="swap-message" name="message" rows="4" placeholder="Add a personal message to your swap request..."></textarea>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary">Send Request</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let currentView = 'grid';
+let currentPage = 1;
+
+function setView(view) {
+    currentView = view;
+    const container = document.getElementById('items-container');
+    const viewBtns = document.querySelectorAll('.view-btn');
+    
+    // Update active button
+    viewBtns.forEach(btn => btn.classList.remove('active'));
+    event.target.closest('.view-btn').classList.add('active');
+    
+    // Update container class
+    container.className = view === 'grid' ? 'items-grid' : 'items-list';
+}
+
+function requestSwap(itemId) {
+    document.getElementById('swap-item-id').value = itemId;
+    document.getElementById('swap-modal').classList.add('active');
+}
+
+function closeModal() {
+    document.getElementById('swap-modal').classList.remove('active');
+    document.getElementById('swap-form').reset();
+}
+
+// Close modal when clicking outside
+document.getElementById('swap-modal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeModal();
+    }
+});
+
+function loadMore() {
+    currentPage++;
+    // You can implement AJAX loading here
+    console.log('Loading more items, page:', currentPage);
+}
+
+// Infinite scroll
+window.addEventListener('scroll', function() {
+    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 1000) {
+        // Near bottom, load more
+        loadMore();
+    }
+});
+
+// Search suggestions
+const searchInput = document.querySelector('input[name="search"]');
+let searchTimeout;
+
+searchInput.addEventListener('input', function() {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+        // You can implement search suggestions here
+        console.log('Searching for:', this.value);
+    }, 300);
+});
+
+// Filter form auto-submit
+document.querySelectorAll('.filter-form select').forEach(select => {
+    select.addEventListener('change', function() {
+        this.form.submit();
+    });
+});
+
+// Keyboard shortcuts
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeModal();
+    }
+});
+
+// Lazy loading for images
+const images = document.querySelectorAll('.item-image img');
+const imageObserver = new IntersectionObserver((entries, observer) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            const img = entry.target;
+            img.src = img.dataset.src;
+            img.classList.remove('lazy');
+            observer.unobserve(img);
+        }
+    });
+});
+
+images.forEach(img => {
+    if (img.dataset.src) {
+        imageObserver.observe(img);
+    }
+});
+</script>
+{% endblock %} 
