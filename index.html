@@ -1,0 +1,232 @@
+{% extends "base.html" %}
+
+{% block title %}SwapHub - Home{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+    <div class="hero-content">
+        <h1>Swap Items, Earn Points</h1>
+        <p>Join thousands of users trading items and building a sustainable community. Turn your unused items into points and discover amazing treasures.</p>
+        <div class="hero-buttons">
+            <a href="{{ url_for('signup') }}" class="btn btn-primary">
+                <i class="fas fa-rocket"></i>
+                Start Swapping
+            </a>
+            <a href="{{ url_for('browse') }}" class="btn btn-outline">
+                <i class="fas fa-search"></i>
+                Browse Items
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="section">
+    <div class="container">
+        <div class="text-center mb-6">
+            <h2>Why Choose SwapHub?</h2>
+            <p class="text-secondary">Our platform makes item swapping simple, secure, and rewarding for everyone.</p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="card text-center">
+                <div class="card-body">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>Secure Trading</h3>
+                    <p>All transactions are verified and secure. Your items are protected.</p>
+                </div>
+            </div>
+            
+            <div class="card text-center">
+                <div class="card-body">
+                    <div class="feature-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h3>Instant Points</h3>
+                    <p>Earn points immediately when your items are swapped or redeemed.</p>
+                </div>
+            </div>
+            
+            <div class="card text-center">
+                <div class="card-body">
+                    <div class="feature-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3>Growing Community</h3>
+                    <p>Join thousands of users building a sustainable trading ecosystem.</p>
+                </div>
+            </div>
+            
+            <div class="card text-center">
+                <div class="card-body">
+                    <div class="feature-icon">
+                        <i class="fas fa-leaf"></i>
+                    </div>
+                    <h3>Eco-Friendly</h3>
+                    <p>Reduce waste by giving items a second life through swapping.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Items Section -->
+<section class="section bg-light">
+    <div class="container">
+        <div class="text-center mb-6">
+            <h2>Featured Items</h2>
+            <p class="text-secondary">Discover amazing items available for swapping</p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {% for item in featured_items %}
+            <div class="item-card">
+                <img src="{{ url_for('static', filename='uploads/' + (item.images.split(',')[0] if item.images else 'placeholder.jpg')) }}" 
+                     alt="{{ item.title }}" class="item-image">
+                <div class="item-content">
+                    <h3 class="item-title">{{ item.title }}</h3>
+                    <p class="item-category">{{ item.category }}</p>
+                    <span class="item-points">{{ item.points_value }} points</span>
+                    <div class="item-actions">
+                        <a href="{{ url_for('item_detail', item_id=item.id) }}" class="btn btn-primary btn-sm">View Details</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center mt-6">
+            <a href="{{ url_for('browse') }}" class="btn btn-outline">View All Items</a>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="section">
+    <div class="container">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+            <div class="stat-item">
+                <div class="stat-number">10K+</div>
+                <div class="stat-label">Active Users</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">50K+</div>
+                <div class="stat-label">Items Listed</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">4.8</div>
+                <div class="stat-label">User Rating</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="section bg-primary text-white">
+    <div class="container text-center">
+        <h2>Ready to Start Swapping?</h2>
+        <p class="mb-4">Join our community today and start trading items with users around the world.</p>
+        <div class="flex gap-4 justify-center">
+            <a href="{{ url_for('signup') }}" class="btn btn-white">Get Started Free</a>
+            <a href="{{ url_for('browse') }}" class="btn btn-outline btn-white">Browse Items</a>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<style>
+.section {
+    padding: 4rem 0;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-secondary {
+    color: var(--text-secondary);
+}
+
+.bg-light {
+    background-color: var(--bg-secondary);
+}
+
+.bg-primary {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+}
+
+.btn-white {
+    background: white;
+    color: var(--primary-color);
+}
+
+.btn-white:hover {
+    background: #f8f9fa;
+}
+
+.btn-sm {
+    padding: 0.5rem 1rem;
+    font-size: 0.75rem;
+}
+
+.feature-icon {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    color: white;
+    font-size: 1.5rem;
+}
+
+.stat-item {
+    padding: 2rem;
+}
+
+.stat-number {
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    font-size: 1.125rem;
+    color: var(--text-secondary);
+}
+
+@media (max-width: 768px) {
+    .hero h1 {
+        font-size: 2rem;
+    }
+    
+    .hero p {
+        font-size: 1rem;
+    }
+    
+    .hero-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .grid-cols-2,
+    .grid-cols-3,
+    .grid-cols-4 {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %} 
