@@ -1,58 +1,60 @@
-# from flask import render_template, redirect, url_for, flash, request
-# from flask_login import login_user, logout_user, current_user
-# from app.auth import bp
-# from app.auth.forms import LoginForm, RegistrationForm
-# from app.models import User
-# from app import db
-
-# @bp.route('/login', methods=['GET', 'POST'])
-# def login():
-#     if current_user.is_authenticated:
-#         return redirect(url_for('main.index'))
-#     form = LoginForm()
-#     if form.validate_on_submit():
-#         user = User.query.filter_by(email=form.email.data).first()
-#         if user is None or not user.check_password(form.password.data):
-#             flash('Invalid email or password')
-#             return redirect(url_for('auth.login'))
-#         login_user(user, remember=form.remember_me.data)
-#         next_page = request.args.get('next')
-#         return redirect(next_page or url_for('main.index'))
-#     return render_template('auth/login.html', title='Sign In', form=form)
-
-# @bp.route('/register', methods=['GET', 'POST'])
-# def register():
-#     if current_user.is_authenticated:
-#         return redirect(url_for('main.index'))
-#     form = RegistrationForm()
-#     if form.validate_on_submit():
-#         user = User(username=form.username.data, email=form.email.data)
-#         user.set_password(form.password.data)
-#         db.session.add(user)
-#         db.session.commit()
-#         flash('Congratulations, you are now a registered user!')
-#         return redirect(url_for('auth.login'))
-#     return render_template('auth/register.html', title='Register', form=form)
-
-# @bp.route('/logout')
-# def logout():
-#     logout_user()
-#     return redirect(url_for('main.index'))
-from flask import render_template, redirect, url_for, flash, request
-from flask_login import login_user, logout_user, current_user
-from app.auth import bp
-from app.auth.forms import LoginForm, RegistrationForm
+from flask import render_template, redirect, url_for, flash
+from flask_login import login_user, logout_user, current_user, login_required
+from . import bp
 from app.models import User
-from app.extensions import db
-from werkzeug.security import generate_password_hash, check_password_hash
+from app.extensions import db, bcrypt
+from .forms import LoginForm, RegistrationForm
+from sqlalchemy.exc import SQLAlchemyError
 
 @bp.route('/login', methods=['GET', 'POST'])
 def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('main.dashboard'))
+
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
-        if user and check_password_hash(user.password, form.password.data):
-            login_user(user)
-            return redirect(url_for('main.dashboard'))
-        flash('Invalid credentials')
-    return render_template('login.html', form=form)
+        try:
+            user = User.query.filter_by(email=form.email.data).first()
+            if user and bcrypt.check_password_hash(user.password, form.password.data):
+                login_user(user)
+                flash('Logged in successfully!', 'success')
+                next_page = request.args.get('next')
+                return redirect(next_page or url_for('main.dashboard'))
+            flash('Invalid email or password', 'danger')
+        except Exception as e:
+            flash('Login failed. Please try again.', 'danger')
+    
+    return render_template('auth/login.html', form=form)
+
+@bp.route('/register', methods=['GET', 'POST'])
+def register():
+    if current_user.is_authenticated:
+        return redirect(url_for('main.dashboard'))
+
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        try:
+            if User.query.filter_by(email=form.email.data).first():
+                flash('Email already registered!', 'warning')
+                return redirect(url_for('auth.register'))
+
+            hashed_pw = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+            user = User(email=form.email.data, password=hashed_pw)
+            db.session.add(user)
+            db.session.commit()
+            
+            flash('Account created! Please login.', 'success')
+            return redirect(url_for('auth.login'))
+            
+        except SQLAlchemyError:
+            db.session.rollback()
+            flash('Registration failed. Please try again.', 'danger')
+    
+    return render_template('auth/register.html', form=form)  # Changed to register.html
+
+@bp.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    flash('You have been logged out.', 'info')
+    return redirect(url_for('main.landing'))

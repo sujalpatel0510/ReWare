@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}Welcome to Ancient Buffalo{% endblock %}
+{% block content %}
+<div class="text-center mb-10">
+    <h1 class="text-4xl font-bold text-green-700 mb-2">Welcome to ReWear</h1>
+    <p class="text-gray-600 text-lg">A community platform for exchanging pre-loved clothing.</p>
+</div>
+
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+    <div class="bg-white rounded shadow p-6 text-center hover:shadow-lg transition">
+        <h2 class="text-xl font-semibold text-green-700">Browse Items</h2>
+        <p class="text-gray-500 mt-2">Explore fashion pieces shared by the community.</p>
+    </div>
+    <div class="bg-white rounded shadow p-6 text-center hover:shadow-lg transition">
+        <h2 class="text-xl font-semibold text-green-700">Share Your Wardrobe</h2>
+        <p class="text-gray-500 mt-2">List clothes you no longer use and earn points.</p>
+    </div>
+    <div class="bg-white rounded shadow p-6 text-center hover:shadow-lg transition">
+        <h2 class="text-xl font-semibold text-green-700">Swap Sustainably</h2>
+        <p class="text-gray-500 mt-2">Request items from others and swap with points.</p>
+    </div>
+</div>
+{% endblock %}

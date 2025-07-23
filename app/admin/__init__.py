@@ -1,5 +1,8 @@
+# app/admin/__init__.py
+
 from flask import Blueprint
 
 bp = Blueprint('admin', __name__)
 
-from app.admin import routes
+# Import routes after blueprint is defined to prevent circular imports
+from . import routes

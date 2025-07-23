@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block title %}Admin Panel{% endblock %}
+{% block content %}
+<h2 class="text-2xl font-bold text-green-700 mb-4">Admin Dashboard</h2>
+
+<div class="grid md:grid-cols-3 gap-4">
+    <div class="bg-white shadow rounded p-4">
+        <h3 class="text-lg font-semibold">Total Users</h3>
+        <p class="text-2xl text-green-700">{{ stats.total_users }}</p>
+    </div>
+    <div class="bg-white shadow rounded p-4">
+        <h3 class="text-lg font-semibold">Active Listings</h3>
+        <p class="text-2xl text-green-700">{{ stats.active_products }}</p>
+    </div>
+    <div class="bg-white shadow rounded p-4">
+        <h3 class="text-lg font-semibold">Total Swaps</h3>
+        <p class="text-2xl text-green-700">{{ stats.total_swaps }}</p>
+    </div>
+</div>
+
+<h3 class="mt-8 text-xl font-bold">Recent Admin Actions</h3>
+<ul class="mt-2 bg-white rounded shadow p-4 divide-y">
+    {% for log in logs %}
+    <li class="py-2">
+        <strong>{{ log.action }}</strong> by Admin {{ log.adminId }} — 
+        <span class="text-sm text-gray-500">{{ log.timestamp.strftime("%Y-%m-%d %H:%M") }}</span>
+    </li>
+    {% else %}
+    <li>No recent actions found.</li>
+    {% endfor %}
+</ul>
+{% endblock %}

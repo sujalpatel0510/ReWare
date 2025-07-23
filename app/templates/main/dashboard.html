@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block title %}My Dashboard{% endblock %}
+
+{% block content %}
+<h2 class="text-3xl font-bold text-green-800 mb-8">Welcome, {{ current_user.email }}</h2>
+
+<div class="grid md:grid-cols-2 gap-8">
+    
+    <!-- My Listed Products -->
+    <div class="bg-white p-6 rounded-2xl shadow-md hover:shadow-lg transition">
+        <h3 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">🛍️ My Listed Products</h3>
+        {% if my_products %}
+            <ul class="space-y-3">
+                {% for item in my_products %}
+                <li class="flex justify-between items-center border p-3 rounded-lg">
+                    <span class="font-medium">{{ item.title }}</span>
+                    <span class="text-sm text-gray-500 px-3 py-1 bg-gray-100 rounded-full">{{ item.status }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="text-gray-500 italic">No items listed yet.</p>
+        {% endif %}
+    </div>
+
+    <!-- Swap Requests -->
+    <div class="bg-white p-6 rounded-2xl shadow-md hover:shadow-lg transition">
+        <h3 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">🔄 Swap Requests</h3>
+        {% if my_swaps %}
+            <ul class="space-y-3">
+                {% for swap in my_swaps %}
+                <li class="border p-3 rounded-lg">
+                    <p><strong>Offered:</strong> {{ swap.offeredItemId }} → <strong>Requested:</strong> {{ swap.requestedItemId }}</p>
+                    <p class="text-sm text-gray-500">Status: {{ swap.status }}</p>
+                </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="text-gray-500 italic">No swap requests yet.</p>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}

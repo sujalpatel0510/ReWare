@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block title %}Login{% endblock %}
+{% block content %}
+<div class="max-w-md mx-auto bg-white p-8 rounded shadow">
+    <h2 class="text-2xl font-semibold mb-6 text-center">Login</h2>
+    <form method="POST" action="{{ url_for('auth.login') }}">
+        {{ form.hidden_tag() }}
+        
+        <!-- Email Field -->
+        <div class="mb-4">
+            {{ form.email.label(class="block mb-1 font-medium text-gray-700") }}
+            {{ form.email(class="w-full px-4 py-2 border rounded", placeholder="your@email.com") }}
+            {% for error in form.email.errors %}
+                <p class="text-red-500 text-sm mt-1">{{ error }}</p>
+            {% endfor %}
+        </div>
+        
+        <!-- Password Field -->
+        <div class="mb-4">
+            {{ form.password.label(class="block mb-1 font-medium text-gray-700") }}
+            {{ form.password(class="w-full px-4 py-2 border rounded", placeholder="••••••••") }}
+            {% for error in form.password.errors %}
+                <p class="text-red-500 text-sm mt-1">{{ error }}</p>
+            {% endfor %}
+        </div>
+        
+        <!-- Remember Me Checkbox -->
+        <div class="mb-4 flex items-center">
+            {{ form.remember(class="mr-2") }}
+            {{ form.remember.label(class="text-gray-700") }}
+        </div>
+        
+        <!-- Submit Button -->
+        <div class="text-center">
+            <button type="submit" class="btn btn-primary px-6 py-2">
+                Login
+            </button>
+        </div>
+    </form>
+    
+    <!-- Registration Link -->
+    <div class="mt-4 text-center">
+        <p class="text-gray-600">Need an account?
+            <a href="{{ url_for('auth.register') }}" class="text-blue-600 hover:underline">Register</a>
+        </p>
+    </div>
+</div>
+{% endblock %}
